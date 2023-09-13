@@ -28,12 +28,11 @@ li {
 }
 
 .message-block {
-    height: 30px;
-    width: 300px;
     display: flex;
     justify-content: center;
-    padding-top: 10px;
+    padding: 10px;
     border-radius: 20px;
+    width: 300px;
 }
 
 .user-chat {

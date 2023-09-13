@@ -3,16 +3,31 @@
     <div class="userName">Hi, {{user_name}}</div>
     <div class="search">
         <form [formGroup]="searchForm">
-            <input formControlName="searchInput"/>
+            <input formControlName="searchInput" />
             <button (click) = "onSearch()">Search</button>
         </form>
-        
     </div>
 </div>
 
 <div class="userDash">
-    <div class="userList">
-        <app-user-list></app-user-list>
+    <div *ngIf = "!isSearching">
+        <div class="userList">
+            <app-user-list></app-user-list>
+        </div>
+    </div>
+    <div *ngIf = "isSearching" class="message-container">
+        <div class="closeButton">
+            <button (click) = "onClose()">Close</button>
+        </div>
+        <div class="messages">
+            <div *ngFor="let message of matchingMessages" class="list">
+                <li [ngClass]="['message-block', message.senderId == loggedInUserId ? 'sentClass' : 'receivedClass']">
+                    {{message.content}}
+                </li>
+            </div>
+        </div>
+       
+        
     </div>
     <div class="chat">
         <router-outlet name="chatOutlet"></router-outlet>
