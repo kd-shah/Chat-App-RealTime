@@ -2,6 +2,9 @@ import { Component } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/Services/auth.service';
+import { SocialAuthService, SocialUser } from '@abacritt/angularx-social-login';
+import { ExternalAuthDto } from './model';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-login',
@@ -10,6 +13,14 @@ import { AuthService } from 'src/app/Services/auth.service';
 })
 export class LoginComponent {
   loginForm! : FormGroup
+  googleService: any;
+  errorMessage: string | null = null;
+
+  user?: SocialUser;
+  showError: boolean | undefined;
+  body: ExternalAuthDto[] = [];
+
+  
   constructor(private fb: FormBuilder, private auth: AuthService, private router : Router){}
 
   ngOnInit(): void {
@@ -17,7 +28,37 @@ export class LoginComponent {
       email: ['',Validators.required ],
      password: ['',Validators.required ]
     })
+    
+
+    this.externalLogin();
   }
+
+  externalLogin = () => {
+    this.showError = false;
+    this.auth.signInWithGoogle();
+    this.auth.extAuthChanged.subscribe(user => {
+      const externalAuth: ExternalAuthDto = {
+        idToken: user.idToken
+      }
+      this.validateExternalAuth(externalAuth);
+    })
+  }
+
+
+  private validateExternalAuth(externalAuth: ExternalAuthDto) {
+    this.auth.externalLogin(externalAuth).subscribe({
+      next: (res : any) => {
+        localStorage.setItem("token", res.token);
+        // console.log('res', res.token);
+        this.router.navigateByUrl('/dashboard');
+      },
+      error: (err: HttpErrorResponse) => {
+        this.errorMessage = err.message;
+        this.showError = true;
+      }
+    });
+  }
+
   onLogin(){
     if(this.loginForm.valid){
       //send object to db

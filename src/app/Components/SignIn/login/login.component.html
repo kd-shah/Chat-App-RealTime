@@ -7,6 +7,19 @@
         <small *ngIf="loginForm.controls['password'].dirty  && loginForm.hasError('required', 'password')" style="color: red;">*Password is required</small>
 
         <button type="submit" (click) = onLogin()>Log in</button> 
+        
+        <div>
+           
+                <asl-google-signin-button
+                class="googlbtn"
+                theme="filled_blue"
+                type="icon"
+                shape="circle"
+                size="large"
+              ></asl-google-signin-button>
+            
+        </div>
+        
         <p>Don't have an account ? <span><a [routerLink]="['/register']">Sign up</a></span></p>
     </form>
 </div>
