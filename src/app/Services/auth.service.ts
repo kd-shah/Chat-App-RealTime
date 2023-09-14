@@ -11,8 +11,8 @@ import { ExternalAuthDto } from '../Components/SignIn/login/model';
 })
 export class AuthService {
 
-  private authChangeSub = new Subject<boolean>();
-private extAuthChangeSub = new Subject<SocialUser>();
+public authChangeSub = new Subject<boolean>();
+public extAuthChangeSub = new Subject<SocialUser>();
 public authChanged = this.authChangeSub.asObservable();
 public extAuthChanged = this.extAuthChangeSub.asObservable();
 
@@ -21,18 +21,27 @@ public extAuthChanged = this.extAuthChangeSub.asObservable();
   
   constructor(private http: HttpClient, private externalAuthService: SocialAuthService) { 
     this.externalAuthService.authState.subscribe((user) => {
-      console.log(user)
+      // console.log(user)
       this.extAuthChangeSub.next(user);
     })
   }
 
+  //Authentication with google
   signInWithGoogle = () => {
     this.externalAuthService.signIn(GoogleLoginProvider.PROVIDER_ID);
-
   }
 
-  externalLogin(googleUser: ExternalAuthDto): Observable<any> {
-    return this.http.post<any>(`https://localhost:7218/api/User/GoogleAuthenticate`, googleUser);
+  // externalLogin(googleUser: ExternalAuthDto) {
+  //   return this.http.post<any>(`${this.baseUrl}GoogleAuthenticate?idToken=${googleUser.idToken}`);
+  // }
+
+  externalLogin(googleUser: ExternalAuthDto) {
+    const requestBody = { idToken: googleUser.idToken };
+    return this.http.post<any>(`${this.baseUrl}GoogleAuthenticate`, requestBody);
+  }
+
+  public signOutExternal = () => {
+    this.externalAuthService.signOut();
   }
   
   register(userObj:RegisterRequest){

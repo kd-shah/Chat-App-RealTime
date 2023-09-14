@@ -40,7 +40,6 @@ export class MessageService {
   }
 
   searchMessage(searchInput : string){
-    console.log(searchInput)
     return this.http.get<any>(`${this.baseUrl}messages/search?query=${searchInput}`)
   }
   
