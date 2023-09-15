@@ -5,6 +5,7 @@ import { AuthService } from 'src/app/Services/auth.service';
 import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { switchMap } from 'rxjs';
 import { Message, MessageResponse } from './model';
+import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 
 
 @Component({
@@ -36,6 +37,9 @@ export class ChatComponent implements OnInit {
   private isLoading = false;
   private isEndOfMessages = false;
 
+  private connection!: HubConnection;
+
+
   constructor(private route: ActivatedRoute,
     private message: MessageService,
     private auth: AuthService,
@@ -47,9 +51,34 @@ export class ChatComponent implements OnInit {
       const userId = params['userId'];
       this.message.receiverId = userId;
 
-      console.log('ngOnInit called with userId:', userId);
+      // console.log('ngOnInit called with userId:', userId);
       this.messagesFound = true;
       this.loadMessages();
+
+      const localToken = localStorage.getItem('auth-token');
+      this.connection = new HubConnectionBuilder()
+  
+        .withUrl(`https://localhost:7218/chat?access_token=${localToken}`)
+        .build();
+  
+  
+      this.connection.start()
+        .then(() =>
+          console.log('conn start'))
+        .catch(err => {
+          console.log('error in conn')
+        });
+  
+      this.connection.on('Broadcast', (message) => {
+        message.messageId = message.messageId;
+        // console.log(message.messageID);
+        this.messages.push(message);
+        // console.log(message.id);
+        console.log(this.messages);
+        // Scroll to the bottom when user send or receive the mesaage
+        this.scrollToBottom();
+  
+      })
     });
 
 

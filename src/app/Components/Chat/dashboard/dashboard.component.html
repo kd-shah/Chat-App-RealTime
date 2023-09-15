@@ -19,12 +19,15 @@
         <div class="closeButton">
             <button (click) = "onClose()">Close</button>
         </div>
-        <div class="messages">
+        <div class="messages" *ngIf="matchingMessages.length > 0">
             <div *ngFor="let message of matchingMessages" class="list">
                 <li [ngClass]="['message-block', message.senderId == loggedInUserId ? 'sentClass' : 'receivedClass']">
                     {{message.content}}
                 </li>
             </div>
+        </div>
+        <div *ngIf="matchingMessages.length === 0" class="messageNotFound">
+                No Matches found
         </div>
        
         

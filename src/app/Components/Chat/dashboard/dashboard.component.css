@@ -125,3 +125,14 @@ body {
     overflow-y: scroll;
     height: 460px;
 }
+.messageNotFound{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow-y: scroll;
+    height: 460px;
+    color: white;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+}

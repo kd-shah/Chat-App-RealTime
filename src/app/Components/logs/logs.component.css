@@ -10,6 +10,7 @@ h2{
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
+  table-layout: fixed;
 }
 
 .table th,
@@ -17,6 +18,9 @@ h2{
   border: 1px solid #ddd;
   padding: 8px;
   text-align: left;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .table th {
