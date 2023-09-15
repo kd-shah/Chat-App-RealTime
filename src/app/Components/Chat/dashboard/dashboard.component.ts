@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { AuthService } from 'src/app/Services/auth.service';
 import { MessageService } from 'src/app/Services/message.service';
 import { MessageResponse } from './model';
+import { SocialAuthService } from '@abacritt/angularx-social-login';
 
 
 @Component({
@@ -13,16 +14,16 @@ import { MessageResponse } from './model';
 })
 export class DashboardComponent implements OnInit {
 
-  constructor(private fb: FormBuilder, private auth: AuthService, 
+  constructor(private fb: FormBuilder, private auth: AuthService,
     private router: Router, private message: MessageService) {
   }
 
   searchForm!: FormGroup
   user_name = this.auth.getName();
-  isSearching : boolean = false;
+  isSearching: boolean = false;
   loggedInUserId = this.auth.getUserId();
 
-  matchingMessages! : MessageResponse[]   
+  matchingMessages!: MessageResponse[]
 
   ngOnInit(): void {
     this.searchForm = this.fb.group({
@@ -31,6 +32,7 @@ export class DashboardComponent implements OnInit {
   }
 
   onLogout() {
+    this.auth.signOutExternal();
     this.auth.removetoken();
     this.router.navigate(['/login'])
   }
@@ -38,14 +40,14 @@ export class DashboardComponent implements OnInit {
   onSearch() {
     this.isSearching = true;
     this.message.searchMessage(this.searchForm.value.searchInput)
-    .subscribe((response : any) => {
-      console.log(response)
-      this.matchingMessages = response
-    }
-    );
+      .subscribe((response: any) => {
+        console.log(response)
+        this.matchingMessages = response
+      }
+      );
     console.log(this.searchForm.value.searchInput);
   }
-  onClose(){
+  onClose() {
     this.isSearching = false;
     this.searchForm.reset()
 

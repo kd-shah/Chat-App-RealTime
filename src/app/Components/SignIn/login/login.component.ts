@@ -32,81 +32,38 @@ export class LoginComponent {
       email: ['', Validators.required],
       password: ['', Validators.required]
     })
+
     this.socialService.authState.subscribe((user: SocialUser) => {
-      this.user = user;
-      console.log(this.user);
-
-      setTimeout(() => {
-        this.externalLogin();
-        this.router.navigate(['/dashboard']);
-      }, 2000); 
-    })
-
-  }
-
-  externalLogin = () => {
-    console.log("API hit");
-    this.showError = false;
-    // this.auth.signInWithGoogle();
-    this.auth.authChangeSub.next(true);
-    this.auth.extAuthChangeSub.next(this.user);
-    this.auth.extAuthChanged.subscribe((response : any) => {
-      console.log("From backend", response)
-      const externalAuth: ExternalAuthDto = {
-        idToken: response.idToken
+      if (user) {
+        this.externalLogin(user);
       }
-      this.auth.storeToken(this.googleUserToken)
-      console.log("Token for bearer", this.googleUserToken)
-      this.auth.storeDetails(response.firstName, response.id)
-
-      console.log(response.firstName, response.id)
-      this.validateExternalAuth(externalAuth);
-
-
-    })
-  }
-
-
-  private validateExternalAuth(externalAuth: ExternalAuthDto) {
-
-    this.auth.externalLogin(externalAuth).subscribe(response => {
-      this.googleUserToken = response;
-      console.log("Tokennnnnnnnnnnnnnnnnnnnnnn", response)
     });
+
   }
 
-  // private handleExternalLogin() {
-  //   console.log("API hit");
-  //   this.showError = false;
 
-  //   // Subscribe to externalLogin and handle the response
-  //   this.auth.extAuthChanged.pipe(
-  //     tap((user : any) => {
-  //       console.log("From backend", user);
-  //       const externalAuth: ExternalAuthDto = {
-  //         idToken: user.idToken
-  //       };
+  externalLogin(user: SocialUser) {
+    // console.log("API hit");
 
-  //       // Store the token and navigate to the dashboard
-  //       this.validateExternalAuth(externalAuth).subscribe((response) => {
-  //         this.googleUserToken = response;
-  //         console.log("Tokennnnnnnnnnnnnnnnnnnnnnn", response);
+    const externalAuth: ExternalAuthDto = {
+      idToken: user.idToken
+    };
 
-  //         // Navigate to the dashboard here
-  //         this.router.navigate(['/dashboard']);
-  //       });
-  //     })
-  //   ).subscribe();
-  // }
+    // Call the external authentication API
+    this.auth.externalLogin(externalAuth).subscribe((response: any) => {
 
-  // private validateExternalAuth(externalAuth: ExternalAuthDto) {
-  //   // Use the tap operator to log the response and then return it
-  //   return this.auth.externalLogin(externalAuth).pipe(
-  //     tap((response) => {
-  //       console.log("Response from externalLogin:", response);
-  //     })
-  //   );
-  // }
+      this.auth.storeToken(response.token);
+      // console.log("Token for bearer", response.token);
+
+      this.auth.storeDetails(response.user.name, response.user.id);
+      // console.log(response.user.name, response.user.id);
+
+      this.router.navigate(['/dashboard']);
+    });
+    (error: HttpErrorResponse) => {
+      console.error('Error occurred:', error);
+    }
+  }
 
 
   onLogin() {
@@ -119,8 +76,10 @@ export class LoginComponent {
             alert(response.message);
             this.auth.storeToken(response.userInfo.token)
             // console.log(response.userInfo.token)
+
             this.auth.storeDetails(response.userInfo.name, response.userInfo.userId)
             // console.log(response.userInfo.name, response.userInfo.userId)
+
             this.router.navigate(['/dashboard'])
             this.loginForm.reset();
 
