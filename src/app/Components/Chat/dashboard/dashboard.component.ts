@@ -4,8 +4,6 @@ import { Router } from '@angular/router';
 import { AuthService } from 'src/app/Services/auth.service';
 import { MessageService } from 'src/app/Services/message.service';
 import { MessageResponse } from './model';
-import { SocialAuthService } from '@abacritt/angularx-social-login';
-
 
 @Component({
   selector: 'app-dashboard',
@@ -25,10 +23,12 @@ export class DashboardComponent implements OnInit {
 
   matchingMessages!: MessageResponse[]
 
+
   ngOnInit(): void {
     this.searchForm = this.fb.group({
       searchInput: ['', Validators.required]
     })
+
   }
 
   onLogout() {
@@ -52,6 +52,5 @@ export class DashboardComponent implements OnInit {
     this.searchForm.reset()
 
   }
-
 
 }

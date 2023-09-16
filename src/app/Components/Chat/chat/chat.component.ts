@@ -16,7 +16,10 @@ import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 export class ChatComponent implements OnInit {
 
 
-  messages!: Message[];
+  // this.message.messages!: Message[];
+  // messages = this.message.MessageArray;
+
+  messages: Message[] = []
   messagesFound!: boolean;
 
   contextMenuVisible = false;
@@ -37,8 +40,8 @@ export class ChatComponent implements OnInit {
   private isLoading = false;
   private isEndOfMessages = false;
 
-  private connection!: HubConnection;
 
+  private connection!: HubConnection;
 
   constructor(private route: ActivatedRoute,
     private message: MessageService,
@@ -50,35 +53,37 @@ export class ChatComponent implements OnInit {
     this.route.params.subscribe(params => {
       const userId = params['userId'];
       this.message.receiverId = userId;
-
-      // console.log('ngOnInit called with userId:', userId);
+      
       this.messagesFound = true;
       this.loadMessages();
+      console.log("ngOninit", this.messages)
+
 
       const localToken = localStorage.getItem('auth-token');
       this.connection = new HubConnectionBuilder()
-  
-        .withUrl(`https://localhost:7218/chat?access_token=${localToken}`)
+
+        .withUrl(`https://localhost:7218/hub/chat?access_token=${localToken}`)
         .build();
-  
-  
+
+
       this.connection.start()
         .then(() =>
           console.log('conn start'))
-        .catch(err => {
-          console.log('error in conn')
+        .catch(error => {
+          console.log(error)
         });
-  
-      this.connection.on('Broadcast', (message) => {
+      console.log('Before this.connection.on');
+
+      this.connection.on('BroadCast', (message) => {
+
         message.messageId = message.messageId;
-        // console.log(message.messageID);
+
         this.messages.push(message);
-        // console.log(message.id);
-        console.log(this.messages);
-        // Scroll to the bottom when user send or receive the mesaage
-        this.scrollToBottom();
-  
+        this.loadMessages()
+
+
       })
+
     });
 
 
@@ -97,8 +102,9 @@ export class ChatComponent implements OnInit {
     if (this.message.receiverId != null) {
       this.messagesFound = true;
       this.message.getMessages(this.message.receiverId)
-        .subscribe((response: MessageResponse[]) => {
-          this.messages = response.map((msg: MessageResponse) => ({
+        .subscribe((response: any) => {
+          console.log(response)
+          this.messages = response.$values.map((msg: MessageResponse) => ({
             ...msg,
             isEditing: false,
           })).reverse();
@@ -108,7 +114,7 @@ export class ChatComponent implements OnInit {
             this.scrollToBottom();
           });
 
-          console.log('messagesFound:', this.messagesFound);
+          // console.log('messagesFound:', this.messagesFound);
 
 
         }, (error) => {
@@ -161,7 +167,7 @@ export class ChatComponent implements OnInit {
             });
           }
 
-        
+
 
         } else {
 
@@ -194,17 +200,17 @@ export class ChatComponent implements OnInit {
         .pipe(
           switchMap(() => this.message.getMessages(receiverId))
         )
-        .subscribe((response: MessageResponse[]) => {
+        .subscribe((response: any) => {
           this.sendForm.reset();
-          this.messages = response.map((msg: MessageResponse) => ({
+          this.messages = response.$values.map((msg: MessageResponse) => ({
             ...msg,
             isEditing: false,
           })).reverse();
         }
         );
-        setTimeout(() => {
-          this.scrollToBottom();
-        });
+      setTimeout(() => {
+        this.scrollToBottom();
+      });
 
     }
   }

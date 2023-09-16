@@ -18,7 +18,7 @@ export class UserListComponent {
   ngOnInit(){
     this.user.getUsers()
     .subscribe(response => {
-      this.users = response.users;
+      this.users = response.users.$values;
       console.log(response);
     })
   }
