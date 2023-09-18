@@ -15,7 +15,7 @@ import { LogsComponent } from './Components/logs/logs.component';
 import { FormsModule } from '@angular/forms';
 import { SocialLoginModule, SocialAuthServiceConfig } from '@abacritt/angularx-social-login';
 import { GoogleLoginProvider } from '@abacritt/angularx-social-login';
-import {  GoogleSigninButtonDirective } from '@abacritt/angularx-social-login';
+
 
 @NgModule({
   declarations: [
