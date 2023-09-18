@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { AuthService } from 'src/app/Services/auth.service';
 import { MessageService } from 'src/app/Services/message.service';
 import { MessageResponse } from './model';
+import { SignalRService } from 'src/app/Services/signal-r.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -13,7 +14,8 @@ import { MessageResponse } from './model';
 export class DashboardComponent implements OnInit {
 
   constructor(private fb: FormBuilder, private auth: AuthService,
-    private router: Router, private message: MessageService) {
+    private router: Router, private message: MessageService,
+    private signalR: SignalRService) {
   }
 
   searchForm!: FormGroup
@@ -28,6 +30,12 @@ export class DashboardComponent implements OnInit {
     this.searchForm = this.fb.group({
       searchInput: ['', Validators.required]
     })
+
+    this.signalR.startConnection().then(() =>
+      console.log('Connection Start'))
+      .catch(error => {
+        console.log(error)
+      });
 
   }
 

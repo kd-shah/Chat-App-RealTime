@@ -6,6 +6,7 @@ import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { switchMap } from 'rxjs';
 import { Message, MessageResponse } from './model';
 import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
+import { SignalRService } from 'src/app/Services/signal-r.service';
 
 
 @Component({
@@ -16,8 +17,6 @@ import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 export class ChatComponent implements OnInit {
 
 
-  // this.message.messages!: Message[];
-  // messages = this.message.MessageArray;
 
   messages: Message[] = []
   messagesFound!: boolean;
@@ -41,12 +40,11 @@ export class ChatComponent implements OnInit {
   private isEndOfMessages = false;
 
 
-  private connection!: HubConnection;
-
   constructor(private route: ActivatedRoute,
     private message: MessageService,
     private auth: AuthService,
-    private fb: FormBuilder) { }
+    private fb: FormBuilder,
+    private signalR : SignalRService) { }
 
 
   ngOnInit() {
@@ -56,32 +54,12 @@ export class ChatComponent implements OnInit {
       
       this.messagesFound = true;
       this.loadMessages();
-      console.log("ngOninit", this.messages)
 
+      const connection = this.signalR.getConnection();
 
-      const localToken = localStorage.getItem('auth-token');
-      this.connection = new HubConnectionBuilder()
-
-        .withUrl(`https://localhost:7218/hub/chat?access_token=${localToken}`)
-        .build();
-
-
-      this.connection.start()
-        .then(() =>
-          console.log('conn start'))
-        .catch(error => {
-          console.log(error)
-        });
-      console.log('Before this.connection.on');
-
-      this.connection.on('BroadCast', (message) => {
-
-        message.messageId = message.messageId;
-
+      connection.on('BroadCast', (message) => {
         this.messages.push(message);
         this.loadMessages()
-
-
       })
 
     });
