@@ -37,6 +37,7 @@ export class MessageResponse {
     receiverId!: string;
     content!: string;
     timestamp!: string;
+    isRead!: boolean;
   }
   
   export class SendMessageRequest{
@@ -59,4 +60,5 @@ export class Message {
     content!: string;
     timestamp!: string;
     isEditing!: boolean;
+    isRead! : boolean;
 }
