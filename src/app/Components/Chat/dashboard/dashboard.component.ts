@@ -33,6 +33,7 @@ export class DashboardComponent implements OnInit {
   unReadMessages!: Message[]
   unReadCount!: number;
 
+  connection = this.signalR.getConnection();
 
   ngOnInit(): void {
     this.searchForm = this.fb.group({
@@ -40,26 +41,19 @@ export class DashboardComponent implements OnInit {
     })
 
     this.signalR.startConnection()
-      .then(() => {
-        // console.log('Connection Start from dashboard')
-        // this.user.getUnReadMessages()
-        //   .subscribe(response => {
-        //     this.unReadMessages = response;
-        //     console.log("Unread message from User list", response)
-        //   });
-        //   this.user.unReadMessages$.subscribe((messages: any[]) => {
-        //     this.unReadMessages = messages;})
-      })
+      .then()
       .catch(error => {
         console.log(error)
       });
 
-      
+      this.connection.on('BroadCast', (message) => {
+        this.user.getUnReadMessages()
+        .subscribe(response => {
+        this.unReadMessages = response;
+      })
+      })   
 
   }
-
-
-
 
   onLogout() {
     this.auth.signOutExternal();
@@ -71,11 +65,11 @@ export class DashboardComponent implements OnInit {
     this.isSearching = true;
     this.message.searchMessage(this.searchForm.value.searchInput)
       .subscribe((response: any) => {
-        console.log(response)
+        // console.log(response)
         this.matchingMessages = response
       }
       );
-    console.log(this.searchForm.value.searchInput);
+    // console.log(this.searchForm.value.searchInput);
   }
   onClose() {
     this.isSearching = false;
