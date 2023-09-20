@@ -6,6 +6,7 @@ import { MessageService } from 'src/app/Services/message.service';
 import { MessageResponse } from './model';
 import { SignalRService } from 'src/app/Services/signal-r.service';
 import { Message } from '../chat/model';
+import { UserService } from 'src/app/Services/user.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -17,7 +18,8 @@ export class DashboardComponent implements OnInit {
   constructor(private fb: FormBuilder, private auth: AuthService,
     private message: MessageService,
     private router: Router,
-    private signalR: SignalRService) {
+    private signalR: SignalRService,
+    private user: UserService) {
   }
 
   searchForm!: FormGroup
@@ -37,14 +39,22 @@ export class DashboardComponent implements OnInit {
       searchInput: ['', Validators.required]
     })
 
-    this.signalR.startConnection().then(() => {
-      console.log('Connection Start')
-    }
-
-    )
+    this.signalR.startConnection()
+      .then(() => {
+        // console.log('Connection Start from dashboard')
+        // this.user.getUnReadMessages()
+        //   .subscribe(response => {
+        //     this.unReadMessages = response;
+        //     console.log("Unread message from User list", response)
+        //   });
+        //   this.user.unReadMessages$.subscribe((messages: any[]) => {
+        //     this.unReadMessages = messages;})
+      })
       .catch(error => {
         console.log(error)
       });
+
+      
 
   }
 

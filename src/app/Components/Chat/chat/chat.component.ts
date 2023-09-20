@@ -57,14 +57,17 @@ export class ChatComponent implements OnInit {
 
       this.messagesFound = true;
       
-      this.user.readMessages(this.readMessages).subscribe()
+      // this.user.readMessages(this.readMessages).subscribe()
 
       this.loadMessages();
 
       this.connection.on('BroadCast', (message) => {
         this.messages.push(message);
         
-        // this.user.readMessages(this.readMessages).subscribe();
+        // this.user.getUnReadMessages().subscribe(response => {
+        //   console.log(response);
+        //   this.user.unReadMessages = response
+        // })
         this.loadMessages();
       })
 
@@ -82,7 +85,7 @@ export class ChatComponent implements OnInit {
   }
 
   //Loading Initial Messages
-  loadMessages() {
+ loadMessages() {
     if (this.message.receiverId != null) {
       this.messagesFound = true;
       this.message.getMessages(this.message.receiverId)
@@ -97,6 +100,17 @@ export class ChatComponent implements OnInit {
           this.readMessages = response
             .filter((msg: MessageResponse) => msg.receiverId === this.loggedInUserId)
             .map((msg: MessageResponse) => msg.id);
+            this.user.readMessages(this.readMessages).subscribe(response => {
+              console.log("Read messages" , this.readMessages)
+              console.log("Read messages" , response)
+
+              this.user.getUnReadMessages().subscribe(response => {
+              console.log("New unread messages" , response);
+              this.user.unReadMessages = response
+              this.user.updateUnreadMessages(response);
+            })
+            });
+            
 
           this.messagesFound = this.messages.length > 0;
 
@@ -143,6 +157,19 @@ export class ChatComponent implements OnInit {
           ...msg,
           isEditing: false,
         })).reverse();
+
+        // Filter message IDs where receiverId matches loggedInUserId
+          this.readMessages = response
+            .filter((msg: MessageResponse) => msg.receiverId === this.loggedInUserId)
+            .map((msg: MessageResponse) => msg.id);
+            this.user.readMessages(this.readMessages).subscribe();
+            console.log("Read messages" , this.readMessages)
+
+            this.user.getUnReadMessages().subscribe(response => {
+              console.log("New unread messages" , response);
+              this.user.unReadMessages = response
+              this.user.updateUnreadMessages(response);
+            })
 
         if (olderMessages.length > 0) {
           this.messages = [...olderMessages, ...this.messages];
