@@ -5,8 +5,8 @@ import { AuthService } from 'src/app/Services/auth.service';
 import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { switchMap } from 'rxjs';
 import { Message, MessageResponse } from './model';
-import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 import { SignalRService } from 'src/app/Services/signal-r.service';
+import { UserService } from 'src/app/Services/user.service';
 
 
 @Component({
@@ -16,10 +16,11 @@ import { SignalRService } from 'src/app/Services/signal-r.service';
 })
 export class ChatComponent implements OnInit {
 
-
-
   messages: Message[] = []
   messagesFound!: boolean;
+
+  readMessages: number[] = []
+  unReadMessages: Message[] = []
 
   contextMenuVisible = false;
   contextMenuX = 0;
@@ -39,27 +40,35 @@ export class ChatComponent implements OnInit {
   private isLoading = false;
   private isEndOfMessages = false;
 
+  connection = this.signalR.getConnection();
 
   constructor(private route: ActivatedRoute,
     private message: MessageService,
     private auth: AuthService,
     private fb: FormBuilder,
-    private signalR : SignalRService) { }
+    private signalR: SignalRService,
+    private user: UserService) { }
 
 
   ngOnInit() {
     this.route.params.subscribe(params => {
       const userId = params['userId'];
       this.message.receiverId = userId;
-      
+
       this.messagesFound = true;
+      
+      // this.user.readMessages(this.readMessages).subscribe()
+
       this.loadMessages();
 
-      const connection = this.signalR.getConnection();
-
-      connection.on('BroadCast', (message) => {
+      this.connection.on('BroadCast', (message) => {
         this.messages.push(message);
-        this.loadMessages()
+        
+        // this.user.getUnReadMessages().subscribe(response => {
+        //   console.log(response);
+        //   this.user.unReadMessages = response
+        // })
+        this.loadMessages();
       })
 
     });
@@ -76,25 +85,39 @@ export class ChatComponent implements OnInit {
   }
 
   //Loading Initial Messages
-  loadMessages() {
+ loadMessages() {
     if (this.message.receiverId != null) {
       this.messagesFound = true;
       this.message.getMessages(this.message.receiverId)
         .subscribe((response: any) => {
           console.log(response)
-          this.messages = response.$values.map((msg: MessageResponse) => ({
+          this.messages = response.map((msg: MessageResponse) => ({
             ...msg,
             isEditing: false,
           })).reverse();
+
+          // Filter message IDs where receiverId matches loggedInUserId
+          this.readMessages = response
+            .filter((msg: MessageResponse) => msg.receiverId === this.loggedInUserId)
+            .map((msg: MessageResponse) => msg.id);
+            this.user.readMessages(this.readMessages).subscribe(response => {
+              console.log("Read messages" , this.readMessages)
+              console.log("Read messages" , response)
+
+              this.user.getUnReadMessages().subscribe(response => {
+              console.log("New unread messages" , response);
+              this.user.unReadMessages = response
+              this.user.updateUnreadMessages(response);
+            })
+            });
+            
+
           this.messagesFound = this.messages.length > 0;
 
           setTimeout(() => {
             this.scrollToBottom();
           });
-
           // console.log('messagesFound:', this.messagesFound);
-
-
         }, (error) => {
           console.error('Error fetching messages:', error);
         }
@@ -134,6 +157,19 @@ export class ChatComponent implements OnInit {
           ...msg,
           isEditing: false,
         })).reverse();
+
+        // Filter message IDs where receiverId matches loggedInUserId
+          this.readMessages = response
+            .filter((msg: MessageResponse) => msg.receiverId === this.loggedInUserId)
+            .map((msg: MessageResponse) => msg.id);
+            this.user.readMessages(this.readMessages).subscribe();
+            console.log("Read messages" , this.readMessages)
+
+            this.user.getUnReadMessages().subscribe(response => {
+              console.log("New unread messages" , response);
+              this.user.unReadMessages = response
+              this.user.updateUnreadMessages(response);
+            })
 
         if (olderMessages.length > 0) {
           this.messages = [...olderMessages, ...this.messages];
@@ -180,7 +216,7 @@ export class ChatComponent implements OnInit {
         )
         .subscribe((response: any) => {
           this.sendForm.reset();
-          this.messages = response.$values.map((msg: MessageResponse) => ({
+          this.messages = response.map((msg: MessageResponse) => ({
             ...msg,
             isEditing: false,
           })).reverse();

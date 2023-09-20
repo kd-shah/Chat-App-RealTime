@@ -4,6 +4,7 @@ export class MessageResponse {
     receiverId!: string;
     content!: string;
     timestamp!: string;
+    isRead!: boolean;
 }
 
 
@@ -14,4 +15,5 @@ export class Message {
     content!: string;
     timestamp!: string;
     isEditing!: boolean;
+    isRead! : boolean;
 }
