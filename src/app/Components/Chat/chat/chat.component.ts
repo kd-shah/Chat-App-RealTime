@@ -1,12 +1,13 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { MessageService } from 'src/app/Services/message.service';
 import { ActivatedRoute } from '@angular/router';
 import { AuthService } from 'src/app/Services/auth.service';
 import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { switchMap } from 'rxjs';
-import { Message, MessageResponse } from './model';
+import { Message, MessageResponse, File } from './model';
 import { SignalRService } from 'src/app/Services/signal-r.service';
 import { UserService } from 'src/app/Services/user.service';
+import { FileService } from 'src/app/Services/file.service';
 
 
 @Component({
@@ -16,6 +17,7 @@ import { UserService } from 'src/app/Services/user.service';
 })
 export class ChatComponent implements OnInit {
 
+  @ViewChild('fileInput') fileInputRef!: ElementRef;
   messages: Message[] = []
   messagesFound!: boolean;
 
@@ -42,32 +44,30 @@ export class ChatComponent implements OnInit {
 
   connection = this.signalR.getConnection();
 
+  fileInput: HTMLElement | null = document.getElementById('fileInput');
+  selectedFiles: File[] = [];
+
   constructor(private route: ActivatedRoute,
     private message: MessageService,
     private auth: AuthService,
     private fb: FormBuilder,
     private signalR: SignalRService,
-    private user: UserService) { }
+    private user: UserService,
+    private file: FileService) { }
 
 
   ngOnInit() {
+
     this.route.params.subscribe(params => {
       const userId = params['userId'];
       this.message.receiverId = userId;
 
       this.messagesFound = true;
-      
-      // this.user.readMessages(this.readMessages).subscribe()
 
       this.loadMessages();
 
       this.connection.on('BroadCast', (message) => {
         this.messages.push(message);
-        
-        // this.user.getUnReadMessages().subscribe(response => {
-        //   console.log(response);
-        //   this.user.unReadMessages = response
-        // })
         this.loadMessages();
       })
 
@@ -75,7 +75,8 @@ export class ChatComponent implements OnInit {
 
 
     this.sendForm = this.fb.group({
-      message: ['', Validators.required]
+      message: ['', Validators.required],
+      file: [null],
     })
 
     this.editForm = this.fb.group({
@@ -85,7 +86,7 @@ export class ChatComponent implements OnInit {
   }
 
   //Loading Initial Messages
- loadMessages() {
+  loadMessages() {
     if (this.message.receiverId != null) {
       this.messagesFound = true;
       this.message.getMessages(this.message.receiverId)
@@ -100,17 +101,15 @@ export class ChatComponent implements OnInit {
           this.readMessages = response
             .filter((msg: MessageResponse) => msg.receiverId === this.loggedInUserId)
             .map((msg: MessageResponse) => msg.id);
-            this.user.readMessages(this.readMessages).subscribe(response => {
-              console.log("Read messages" , this.readMessages)
-              console.log("Read messages" , response)
+          this.user.readMessages(this.readMessages).subscribe(response => {
 
-              this.user.getUnReadMessages().subscribe(response => {
-              console.log("New unread messages" , response);
+            this.user.getUnReadMessages().subscribe(response => {
+              console.log("New unread messages", response);
               this.user.unReadMessages = response
               this.user.updateUnreadMessages(response);
             })
-            });
-            
+          });
+
 
           this.messagesFound = this.messages.length > 0;
 
@@ -159,17 +158,17 @@ export class ChatComponent implements OnInit {
         })).reverse();
 
         // Filter message IDs where receiverId matches loggedInUserId
-          this.readMessages = response
-            .filter((msg: MessageResponse) => msg.receiverId === this.loggedInUserId)
-            .map((msg: MessageResponse) => msg.id);
-            this.user.readMessages(this.readMessages).subscribe();
-            console.log("Read messages" , this.readMessages)
+        this.readMessages = response
+          .filter((msg: MessageResponse) => msg.receiverId === this.loggedInUserId)
+          .map((msg: MessageResponse) => msg.id);
+        this.user.readMessages(this.readMessages).subscribe();
+        console.log("Read messages", this.readMessages)
 
-            this.user.getUnReadMessages().subscribe(response => {
-              console.log("New unread messages" , response);
-              this.user.unReadMessages = response
-              this.user.updateUnreadMessages(response);
-            })
+        this.user.getUnReadMessages().subscribe(response => {
+          console.log("New unread messages", response);
+          this.user.unReadMessages = response
+          this.user.updateUnreadMessages(response);
+        })
 
         if (olderMessages.length > 0) {
           this.messages = [...olderMessages, ...this.messages];
@@ -211,20 +210,32 @@ export class ChatComponent implements OnInit {
       const receiverId = this.message.receiverId;
       this.messagesFound = true;
       this.message.sendMessages(receiverId, this.sentMessage)
-        .pipe(
-          switchMap(() => this.message.getMessages(receiverId))
-        )
-        .subscribe((response: any) => {
-          this.sendForm.reset();
-          this.messages = response.map((msg: MessageResponse) => ({
-            ...msg,
-            isEditing: false,
-          })).reverse();
+        .subscribe(response => {
+          
+          const file = this.sendForm.get('file')!.value
+          this.file.sendFile(file ,this.sentMessage ,receiverId)
+          .subscribe()
+
+
+          this.message.getMessages(receiverId)
+              .subscribe((response: any) => {
+              this.sendForm.reset();
+              this.messages = response.map((msg: MessageResponse) => ({
+                ...msg,
+                isEditing: false,
+              })).reverse();
+            }
+            );
+          setTimeout(() => {
+            this.scrollToBottom();
+          });
+
         }
-        );
-      setTimeout(() => {
-        this.scrollToBottom();
-      });
+
+        )
+
+
+
 
     }
   }
@@ -315,5 +326,28 @@ export class ChatComponent implements OnInit {
       }
     }
   }
+
+
+
+  //Attaching File
+  attachFile() {
+    this.fileInputRef.nativeElement.click();
+    //this.file
+  }
+
+  onFileSelected(event: any) {
+    const selectedFile = event.target.files[0];
+    if (selectedFile) {
+      this.selectedFiles.push(selectedFile);
+      console.log(this.selectedFiles);
+      this.sendForm.get('file')!.setValue(selectedFile);
+    }
+  }
+
+  onDelete() {
+    this.selectedFiles = [];
+  }
+
+
 
 }

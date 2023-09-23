@@ -22,8 +22,7 @@ li {
 }
 
 .messages {
-    display: flex;
-    flex-direction: column;
+   
     margin: 10px;
 }
 
@@ -45,7 +44,6 @@ li {
 
 .message-box {
     position: fixed;
-    margin-left: -2px;
     bottom: 10px;
     display: flex;
     justify-content: space-between;
@@ -72,15 +70,15 @@ li {
 }
 
 .message {
-    width: 900px;
+    width: 850px;
     height: 20px;
     padding: 5px;
 }
 
-.button {
+.sendButton {
     height: 30px;
-    padding: 5px 40px;
-    margin: 0px 15px;
+    padding: 5px 25px;
+    margin: 0px 5px;
 
 }
 
@@ -104,4 +102,30 @@ li {
     text-align: center;
     margin-top: 100px;
 
+}
+.text-chat{
+    display: flex;
+    flex-direction: column;
+}
+.file-block{
+    display: flex;
+    justify-content: center;
+    padding: 10px;
+    border-radius: 20px;
+    width: 300px;
+}
+#attachButton{
+    height: 30px;
+    padding: 5px 25px;
+    margin: 0px 5px;
+}
+.file-attach{
+    display: none;
+}
+.selectedFiles{
+    position: fixed;
+    background-color: rgb(255, 129, 129);
+    align-items: right;
+    bottom: 65px;
+    right: 10px; 
 }

@@ -25,7 +25,6 @@ export class MessageService {
 
   sendMessages(userId: string, content: string) {
     const requestBody = { content: content };
-    // this.chatConnection.invoke('ReceiveMessage', content)
     return this.http.post<SendMessageRequest>(`${this.baseUrl}messages?receiverId=${userId}`, requestBody)
   }
 

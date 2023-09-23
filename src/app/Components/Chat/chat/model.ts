@@ -5,6 +5,13 @@ export class MessageResponse {
     content!: string;
     timestamp!: string;
     isRead!: boolean;
+    isFile! : boolean;
+    fileId? : number;
+    fileName? : string;
+    fileSize? : number;
+    caption? : string;
+    contentType? : string
+    filePath? : string
 }
 
 
@@ -16,4 +23,17 @@ export class Message {
     timestamp!: string;
     isEditing!: boolean;
     isRead! : boolean;
+    isFile! : boolean;
+    fileId? : number;
+    fileName? : string;
+    fileSize? : number;
+    caption? : string;
+    contentType? : string
+    filePath? : string
+}
+
+export class File{
+    name! : string;
+    size! : number;
+    type! : string
 }
