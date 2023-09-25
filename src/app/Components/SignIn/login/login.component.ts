@@ -43,8 +43,6 @@ export class LoginComponent {
 
 
   externalLogin(user: SocialUser) {
-    // console.log("API hit");
-
     const externalAuth: ExternalAuthDto = {
       idToken: user.idToken
     };

@@ -31,15 +31,7 @@ export class LoginResponse {
     
 }
 
-export class MessageResponse {
-    id!: number;
-    senderId!: any;
-    receiverId!: string;
-    content!: string;
-    timestamp!: string;
-    isRead!: boolean;
-  }
-  
+
   export class SendMessageRequest{
     id!: number;
     requestBody! : {
@@ -53,6 +45,23 @@ export class EditMessageRequest{
     }
 }
 
+export class MessageResponse {
+    id!: number;
+    senderId!: string;
+    receiverId!: string;
+    content!: string;
+    timestamp!: string;
+    isRead!: boolean;
+    isFile! : boolean;
+    fileId? : number;
+    fileName? : string;
+    fileSize? : number;
+    caption? : string;
+    contentType? : string
+    filePath? : string
+}
+
+
 export class Message {
     id!: number;
     senderId!: string | null;
@@ -61,4 +70,10 @@ export class Message {
     timestamp!: string;
     isEditing!: boolean;
     isRead! : boolean;
+    isFile! : boolean;
+    fileId? : number;
+    fileName? : string;
+    fileSize? : number;
+    caption? : string;
+    contentType? : string
 }
