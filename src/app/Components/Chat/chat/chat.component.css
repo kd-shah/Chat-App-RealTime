@@ -22,7 +22,7 @@ li {
 }
 
 .messages {
-   
+
     margin: 10px;
 }
 
@@ -44,12 +44,47 @@ li {
 
 .message-box {
     position: fixed;
-    bottom: 10px;
+    /* bottom: 10px; */
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 10px;
     background-color: rgb(58, 58, 58);
+}
+
+.message-box-container {
+    position: fixed;
+    bottom: 30px;
+    display: flex;
+    margin-left: -10px;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+}
+.message-box-container:focus{
+    border: 1px solid white;
+}
+
+.input-container {
+    flex-grow: 1;
+}
+
+.input-file {
+    display: flex;
+    flex-direction: column;
+}
+
+.input {
+    width: 850px;
+    height: 20px;
+    padding: 5px;
+    background-color: transparent;
+    border: none;
+    color: white;
+}
+.input:focus{
+    border: none;
+    outline: none;
 }
 
 .context-menu {
@@ -69,11 +104,7 @@ li {
     background-color: rgb(170, 255, 242);
 }
 
-.message {
-    width: 850px;
-    height: 20px;
-    padding: 5px;
-}
+
 
 .sendButton {
     height: 30px;
@@ -82,12 +113,13 @@ li {
 
 }
 
-.editInput{
+.editInput {
     border-radius: 5px;
     width: 50%;
     outline: none;
 }
-.optionButton{
+
+.optionButton {
     background-color: black;
     color: white;
     border: none;
@@ -103,29 +135,74 @@ li {
     margin-top: 100px;
 
 }
-.text-chat{
+
+.text-chat {
     display: flex;
     flex-direction: column;
 }
-.file-block{
+
+.file-block {
     display: flex;
     justify-content: center;
     padding: 10px;
     border-radius: 20px;
     width: 300px;
 }
-#attachButton{
+
+#attachButton {
     height: 30px;
     padding: 5px 25px;
     margin: 0px 5px;
 }
-.file-attach{
+
+.file-attach {
     display: none;
 }
-.selectedFiles{
-    position: fixed;
-    background-color: rgb(255, 129, 129);
+
+.selectedFile {
+    /* position: fixed; */
+    /* background-color: rgb(255, 165, 165); */
+    border: 1px solid white;
+    border-radius: 5px;
+    width: fit-content;
     align-items: right;
-    bottom: 65px;
-    right: 10px; 
+    padding: 5px 20px;
+    margin-top: 5px
+}
+
+.file-logos {
+    width: 20px;
+    height: 20px;
+}
+
+.title {
+    display: flex;
+    gap: 10px;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding: 5px 10px;
+}
+
+.file {
+    display: flex;
+    gap: 10px;
+}
+
+.fa-regular {
+    font-size: 20px;
+    padding: 5px;
+}
+
+.caption {
+    padding-top: 5px;
+}
+
+.fileName {
+    color: white;
+    text-align: right;
+    font-size: 15px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
 }

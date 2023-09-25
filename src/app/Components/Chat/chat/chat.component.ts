@@ -3,8 +3,7 @@ import { MessageService } from 'src/app/Services/message.service';
 import { ActivatedRoute } from '@angular/router';
 import { AuthService } from 'src/app/Services/auth.service';
 import { FormBuilder, Validators, FormGroup } from '@angular/forms';
-import { switchMap } from 'rxjs';
-import { Message, MessageResponse, File } from './model';
+import { Message, MessageResponse } from './model';
 import { SignalRService } from 'src/app/Services/signal-r.service';
 import { UserService } from 'src/app/Services/user.service';
 import { FileService } from 'src/app/Services/file.service';
@@ -45,7 +44,7 @@ export class ChatComponent implements OnInit {
   connection = this.signalR.getConnection();
 
   fileInput: HTMLElement | null = document.getElementById('fileInput');
-  selectedFiles: File[] = [];
+  selectedFile: File | null = null;
 
   constructor(private route: ActivatedRoute,
     private message: MessageService,
@@ -76,7 +75,7 @@ export class ChatComponent implements OnInit {
 
     this.sendForm = this.fb.group({
       message: ['', Validators.required],
-      file: [null],
+      file: [''],
     })
 
     this.editForm = this.fb.group({
@@ -205,39 +204,50 @@ export class ChatComponent implements OnInit {
 
   //Sending a message
   onSendMessage() {
+    const receiverId = this.message.receiverId;
     this.sentMessage = this.sendForm.value.message;
-    if (this.message.receiverId !== null && this.sentMessage !== '') {
-      const receiverId = this.message.receiverId;
-      this.messagesFound = true;
-      this.message.sendMessages(receiverId, this.sentMessage)
-        .subscribe(response => {
-          
-          const file = this.sendForm.get('file')!.value
-          this.file.sendFile(file ,this.sentMessage ,receiverId)
-          .subscribe()
-
-
-          this.message.getMessages(receiverId)
+    if (!this.selectedFile) {
+      if (this.message.receiverId !== null && this.sentMessage !== '') {
+        this.messagesFound = true;
+        this.message.sendMessages(receiverId, this.sentMessage)
+          .subscribe(response => {
+            this.message.getMessages(receiverId)
               .subscribe((response: any) => {
-              this.sendForm.reset();
-              this.messages = response.map((msg: MessageResponse) => ({
-                ...msg,
-                isEditing: false,
-              })).reverse();
-            }
-            );
-          setTimeout(() => {
-            this.scrollToBottom();
-          });
-
-        }
-
-        )
-
-
-
-
+                this.sendForm.reset();
+                this.messages = response.map((msg: MessageResponse) => ({
+                  ...msg,
+                  isEditing: false,
+                })).reverse();
+              }
+              );
+            setTimeout(() => {
+              this.scrollToBottom();
+            });
+          }
+          )
+      }
     }
+    else {
+      const file = this.selectedFile;
+      this.file.sendFile(file, receiverId, this.sentMessage).subscribe(response => {
+        console.log(response)
+        this.message.getMessages(receiverId)
+          .subscribe((response: any) => {
+            this.sendForm.reset();
+            this.selectedFile= null
+            this.messages = response.map((msg: MessageResponse) => ({
+              ...msg,
+              isEditing: false,
+            })).reverse();
+            setTimeout(() => {
+              this.scrollToBottom();
+            });
+          })
+          
+
+      })
+    }
+
   }
 
   // Opening context menu
@@ -332,22 +342,37 @@ export class ChatComponent implements OnInit {
   //Attaching File
   attachFile() {
     this.fileInputRef.nativeElement.click();
-    //this.file
   }
 
   onFileSelected(event: any) {
     const selectedFile = event.target.files[0];
     if (selectedFile) {
-      this.selectedFiles.push(selectedFile);
-      console.log(this.selectedFiles);
-      this.sendForm.get('file')!.setValue(selectedFile);
+      this.selectedFile = selectedFile;
+      console.log(this.selectedFile);
     }
   }
 
   onDelete() {
-    this.selectedFiles = [];
+    this.selectedFile = null;
   }
 
 
+onDownload(fileId?: number, fileName?: string) {
+  this.file.downloadFile(fileId).subscribe((data: Blob) => {
+    if(fileName){
+      const blob = new Blob([data], { type: 'application/octet-stream' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName; 
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+    }
+    
+  });
+}
 
 }
