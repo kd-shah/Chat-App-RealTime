@@ -53,12 +53,15 @@ export class MessageResponse {
     timestamp!: string;
     isRead!: boolean;
     isFile! : boolean;
-    fileId? : number;
-    fileName? : string;
-    fileSize? : number;
-    caption? : string;
-    contentType? : string
-    filePath? : string
+    attachedFiles? : [{
+        fileId? : number;
+        fileName? : string;
+        fileSize? : number;
+        caption? : string;
+        contentType? : string
+        filePath? : string
+        uniqueFileName? : string
+    }]
 }
 
 
@@ -71,9 +74,13 @@ export class Message {
     isEditing!: boolean;
     isRead! : boolean;
     isFile! : boolean;
-    fileId? : number;
-    fileName? : string;
-    fileSize? : number;
-    caption? : string;
-    contentType? : string
+    attachedFiles? : [{
+        fileId? : number;
+        fileName? : string;
+        fileSize? : number;
+        caption? : string;
+        contentType? : string
+        filePath? : string
+        uniqueFileName? : string
+    }]
 }

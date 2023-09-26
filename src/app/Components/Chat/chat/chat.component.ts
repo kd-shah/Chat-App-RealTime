@@ -44,7 +44,7 @@ export class ChatComponent implements OnInit {
   connection = this.signalR.getConnection();
 
   fileInput: HTMLElement | null = document.getElementById('fileInput');
-  selectedFile: File | null = null;
+  selectedFiles: File[] = [] ;
 
   constructor(private route: ActivatedRoute,
     private message: MessageService,
@@ -206,7 +206,7 @@ export class ChatComponent implements OnInit {
   onSendMessage() {
     const receiverId = this.message.receiverId;
     this.sentMessage = this.sendForm.value.message;
-    if (!this.selectedFile) {
+    if (this.selectedFiles.length == 0) {
       if (this.message.receiverId !== null && this.sentMessage !== '') {
         this.messagesFound = true;
         this.message.sendMessages(receiverId, this.sentMessage)
@@ -228,13 +228,13 @@ export class ChatComponent implements OnInit {
       }
     }
     else {
-      const file = this.selectedFile;
-      this.file.sendFile(file, receiverId, this.sentMessage).subscribe(response => {
+      const files = this.selectedFiles;
+      this.file.sendFile(files, receiverId, this.sentMessage).subscribe(response => {
         console.log(response)
         this.message.getMessages(receiverId)
           .subscribe((response: any) => {
             this.sendForm.reset();
-            this.selectedFile= null
+            this.selectedFiles= []
             this.messages = response.map((msg: MessageResponse) => ({
               ...msg,
               isEditing: false,
@@ -243,8 +243,6 @@ export class ChatComponent implements OnInit {
               this.scrollToBottom();
             });
           })
-          
-
       })
     }
 
@@ -345,15 +343,19 @@ export class ChatComponent implements OnInit {
   }
 
   onFileSelected(event: any) {
-    const selectedFile = event.target.files[0];
-    if (selectedFile) {
-      this.selectedFile = selectedFile;
-      console.log(this.selectedFile);
+    const selectedFiles = event.target.files;
+    if (selectedFiles.length > 0) {
+      this.selectedFiles = Array.from(selectedFiles);
+      console.log(this.selectedFiles);
     }
   }
 
-  onDelete() {
-    this.selectedFile = null;
+  onDelete(name : string) {
+    console.log(name)
+    const indexToRemove = this.selectedFiles?.findIndex((file : any) => file.name === name);
+    if (indexToRemove !== -1) {
+      this.selectedFiles.splice(indexToRemove, 1);
+    }
   }
 
 

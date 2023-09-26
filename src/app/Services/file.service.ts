@@ -10,9 +10,11 @@ export class FileService {
 
   constructor(private http: HttpClient) { }
 
-  sendFile(file: File,receiverId: string,  caption: string) {
+  sendFile(files: File[],receiverId: string,  caption: string) {
     const formData = new FormData();
-    formData.append('file', file);
+    for(const file of files){
+      formData.append('files', file);
+    }
     formData.append('receiverId', receiverId);
     formData.append('caption', caption);
   

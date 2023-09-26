@@ -15,22 +15,31 @@
                 </li>
             </div>
             <div *ngIf="eachMessage.isFile" class="text-chat">
-                <li (contextmenu)="openContextMenu($event, eachMessage)" [ngClass]="['file-block', eachMessage.senderId == loggedInUserId ? 'sentClass' : 'receivedClass']">
-
-                    <div [ngSwitch]="eachMessage.contentType">
-                        <div class="file">
-                            <div class="title">
-                                <img *ngSwitchCase="'image/png'" src="../../../../assets/Logos/png.png"
-                                    class="file-logos">
-                                <img *ngSwitchCase="'application/pdf'" src="../../../../assets/Logos/pdf.png"
-                                    class="file-logos">
-                                <div>{{eachMessage.fileName}}</div>
+                <li (contextmenu)="openContextMenu($event, eachMessage)"
+                    [ngClass]="['file-block', eachMessage.senderId == loggedInUserId ? 'sentClass' : 'receivedClass']">
+                    <div *ngFor="let eachFile of eachMessage.attachedFiles">
+                        <div [ngSwitch]="eachFile.contentType" class="multiple-files">
+                            <div class="file">
+                                <div class="title">
+                                    <img *ngSwitchCase="'image/png'"
+                                        src="../../../../assets/SharedFiles/{{eachFile.uniqueFileName}}"
+                                        class="file-logos">
+                                    <img *ngSwitchCase="'application/pdf'" src="../../../../assets/Logos/pdf.png"
+                                        class="file-logos">
+                                    <img *ngSwitchCase="'image/jpeg'"
+                                        src="../../../../assets/SharedFiles/{{eachFile.uniqueFileName}}"
+                                        class="file-logos">
+                                    <div class="file-name">{{eachFile.fileName}}</div>
+                                </div>
+                                <i class="fa-regular fa-circle-down"
+                                    (click)="onDownload(eachFile.fileId, eachFile.fileName)"></i>
                             </div>
-                            <i class="fa-regular fa-circle-down" (click) = "onDownload(eachMessage.fileId, eachMessage.fileName)"></i>
+    
+                            
                         </div>
-
-                        <div class="caption">{{eachMessage.caption}}</div>
+                       
                     </div>
+                    <div class="caption">{{eachMessage.content}}</div>
 
                 </li>
             </div>
@@ -60,35 +69,37 @@
 
         </div>
     </div>
-   
+
     <div class="message-box-container">
         <form class="message-box" [formGroup]="sendForm">
             <div class="input-file">
                 <div class="input-container">
                     <input placeholder="Message" class="input" formControlName="message">
                 </div>
-                <div *ngIf="selectedFile" class="selectedFile">
-                    
-                    <div class="fileName">
-                        <div [ngSwitch]="selectedFile.type">
-                            <img *ngSwitchCase="'image/png'" src="../../../../assets/Logos/png.png"
-                            class="file-logos">
-                             <img *ngSwitchCase="'application/pdf'" src="../../../../assets/Logos/pdf.png"
-                            class="file-logos">
+                <div *ngIf="selectedFiles.length > 0" class="selectedFile">
+                    <div *ngFor="let eachFile of selectedFiles">
+                        <div class="fileName">
+                            <div [ngSwitch]="eachFile.type">
+                                <img *ngSwitchCase="'image/png'" src="../../../../assets/Logos/png.png" class="file-logos">
+                                <img *ngSwitchCase="'application/pdf'" src="../../../../assets/Logos/pdf.png"
+                                    class="file-logos">
+                            </div>
+                            <div>
+                                {{eachFile.name}}
+                            </div>
+                            <i class="fa-solid fa-xmark" (click)="onDelete(eachFile.name)"></i>
                         </div>
-                        <div>
-                            {{selectedFile.name}}
-                        </div>
-                        <i class="fa-solid fa-xmark" (click)="onDelete()"></i>
                     </div>
+                    
                 </div>
             </div>
-           
+
             <button id="attachButton" (click)="attachFile()">Attach</button>
-            <input type="file" #fileInput id="fileInput" class="file-attach" formControlName="file" accept=".jpg, .png, .pdf, .jpeg" (change)="onFileSelected($event)">
+            <input type="file" #fileInput id="fileInput" class="file-attach" formControlName="file"
+                accept=".jpg, .png, .pdf, .jpeg" (change)="onFileSelected($event)" multiple>
             <button type="submit" (click)="onSendMessage()" class="sendButton">Send</button>
         </form>
     </div>
-    
+
 
 </div>
