@@ -44,7 +44,7 @@ export class ChatComponent implements OnInit {
   connection = this.signalR.getConnection();
 
   fileInput: HTMLElement | null = document.getElementById('fileInput');
-  selectedFiles: File[] = [] ;
+  selectedFiles: File[] = [];
 
   constructor(private route: ActivatedRoute,
     private message: MessageService,
@@ -234,7 +234,7 @@ export class ChatComponent implements OnInit {
         this.message.getMessages(receiverId)
           .subscribe((response: any) => {
             this.sendForm.reset();
-            this.selectedFiles= []
+            this.selectedFiles = []
             this.messages = response.map((msg: MessageResponse) => ({
               ...msg,
               isEditing: false,
@@ -350,31 +350,32 @@ export class ChatComponent implements OnInit {
     }
   }
 
-  onDelete(name : string) {
+  onDelete(name: string) {
     console.log(name)
-    const indexToRemove = this.selectedFiles?.findIndex((file : any) => file.name === name);
+    const indexToRemove = this.selectedFiles?.findIndex((file: any) => file.name === name);
     if (indexToRemove !== -1) {
       this.selectedFiles.splice(indexToRemove, 1);
     }
   }
 
 
-onDownload(fileId?: number, fileName?: string) {
-  this.file.downloadFile(fileId).subscribe((data: Blob) => {
-    if(fileName){
-      const blob = new Blob([data], { type: 'application/octet-stream' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = fileName; 
-    a.style.display = 'none';
-    document.body.appendChild(a);
-    a.click();
-    window.URL.revokeObjectURL(url);
-    document.body.removeChild(a);
-    }
-    
-  });
-}
+  onDownload(fileId?: number, fileName?: string) {
+    this.file.downloadFile(fileId).subscribe((data: Blob) => {
+      if (fileName) {
+        const blob = new Blob([data], { type: 'application/octet-stream' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      }
 
+    });
+  }
+
+  
 }

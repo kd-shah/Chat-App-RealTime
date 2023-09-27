@@ -17,28 +17,67 @@
             <div *ngIf="eachMessage.isFile" class="text-chat">
                 <li (contextmenu)="openContextMenu($event, eachMessage)"
                     [ngClass]="['file-block', eachMessage.senderId == loggedInUserId ? 'sentClass' : 'receivedClass']">
-                    <div *ngFor="let eachFile of eachMessage.attachedFiles">
-                        <div [ngSwitch]="eachFile.contentType" class="multiple-files">
-                            <div class="file">
-                                <div class="title">
+                    <div *ngIf="eachMessage.attachedFiles && eachMessage.attachedFiles.length>1">
+
+                        <div *ngFor="let eachFile of eachMessage.attachedFiles">
+                            <div [ngSwitch]="eachFile.contentType" class="multiple-files-container">
+                                <div class="multiple-files">
+                                    <div class="multiple-file-title">
+                                        <img *ngSwitchCase="'image/png'"
+                                            src="../../../../assets/SharedFiles/{{eachFile.uniqueFileName}}"
+                                            class="file-logos">
+                                        <img *ngSwitchCase="'application/pdf'" src="../../../../assets/Logos/pdf.png"
+                                            class="file-logos">
+                                        <img *ngSwitchCase="'image/jpeg'"
+                                            src="../../../../assets/Logos/jpg-file-format-variant.png"
+                                            class="file-logos">
+                                        <img *ngSwitchCase="'video/mp4'" src="../../../../assets/Logos/video.png"
+                                            class="file-logos">
+                                        <div class="multiple-file-name">{{eachFile.fileName}}</div>
+                                    </div>
+                                    <i class="fa-regular fa-circle-down"
+                                        (click)="onDownload(eachFile.fileId, eachFile.fileName)"></i>
+                                </div>
+
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div *ngIf="eachMessage.attachedFiles && eachMessage.attachedFiles.length ==1">
+
+                        <div [ngSwitch]="eachMessage.attachedFiles[0].contentType" class="single-file-container">
+                            <div class="single-file">
+                                <div class="single-file-title">
                                     <img *ngSwitchCase="'image/png'"
-                                        src="../../../../assets/SharedFiles/{{eachFile.uniqueFileName}}"
-                                        class="file-logos">
-                                    <img *ngSwitchCase="'application/pdf'" src="../../../../assets/Logos/pdf.png"
-                                        class="file-logos">
+                                        src="../../../../assets/SharedFiles/{{eachMessage.attachedFiles[0].uniqueFileName}}"
+                                        class="image-files">
                                     <img *ngSwitchCase="'image/jpeg'"
-                                        src="../../../../assets/SharedFiles/{{eachFile.uniqueFileName}}"
-                                        class="file-logos">
-                                    <div class="file-name">{{eachFile.fileName}}</div>
+                                        src="../../../../assets/SharedFiles/{{eachMessage.attachedFiles[0].uniqueFileName}}"
+                                        class="image-files">
+
+                                    <!-- <img *ngSwitchCase="'video/mp4'"
+                                    src="{{ generateThumbnailUrl(eachMessage.attachedFiles[0].uniqueFileName) }}" class="video-thumbnail"> -->
+
+                                    <video *ngSwitchCase="'video/mp4'" class="video-files">
+                                        <source
+                                            src="../../../../assets/SharedFiles/{{eachMessage.attachedFiles[0].uniqueFileName}}#t=9"
+                                            type="video/mp4">
+                                        Your browser does not support the video tag.
+                                    </video>
+                                    <div *ngSwitchCase="'text/plain'" #singleTextFile
+                                        id="text-files"></div>
+                                    <div class="single-file-name">{{eachMessage.attachedFiles[0].fileName}}</div>
                                 </div>
                                 <i class="fa-regular fa-circle-down"
-                                    (click)="onDownload(eachFile.fileId, eachFile.fileName)"></i>
+                                    (click)="onDownload(eachMessage.attachedFiles[0].fileId, eachMessage.attachedFiles[0].fileName)"></i>
                             </div>
-    
-                            
                         </div>
-                       
+
                     </div>
+
                     <div class="caption">{{eachMessage.content}}</div>
 
                 </li>
@@ -76,12 +115,15 @@
                 <div class="input-container">
                     <input placeholder="Message" class="input" formControlName="message">
                 </div>
-                <div *ngIf="selectedFiles.length > 0" class="selectedFile">
-                    <div *ngFor="let eachFile of selectedFiles">
-                        <div class="fileName">
+                <div *ngIf="selectedFiles.length > 0" class="multiple-selected-files">
+                    <div *ngFor="let eachFile of selectedFiles" class="selectedFile">
+                        <div class="selected-files-names">
                             <div [ngSwitch]="eachFile.type">
-                                <img *ngSwitchCase="'image/png'" src="../../../../assets/Logos/png.png" class="file-logos">
+                                <img *ngSwitchCase="'image/png'" src="../../../../assets/Logos/png.png"
+                                    class="file-logos">
                                 <img *ngSwitchCase="'application/pdf'" src="../../../../assets/Logos/pdf.png"
+                                    class="file-logos">
+                                <img *ngSwitchCase="'video/mp4'" src="../../../../assets/Logos/video.png"
                                     class="file-logos">
                             </div>
                             <div>
@@ -90,13 +132,13 @@
                             <i class="fa-solid fa-xmark" (click)="onDelete(eachFile.name)"></i>
                         </div>
                     </div>
-                    
+
                 </div>
             </div>
 
             <button id="attachButton" (click)="attachFile()">Attach</button>
             <input type="file" #fileInput id="fileInput" class="file-attach" formControlName="file"
-                accept=".jpg, .png, .pdf, .jpeg" (change)="onFileSelected($event)" multiple>
+                accept=".jpg, .png, .pdf, .jpeg, .mp4" (change)="onFileSelected($event)" multiple>
             <button type="submit" (click)="onSendMessage()" class="sendButton">Send</button>
         </form>
     </div>

@@ -22,7 +22,6 @@ li {
 }
 
 .messages {
-
     margin: 10px;
 }
 
@@ -31,7 +30,7 @@ li {
     justify-content: center;
     padding: 10px;
     border-radius: 20px;
-    width: 300px;
+    /* width: 300px; */
 }
 
 .user-chat {
@@ -141,14 +140,7 @@ li {
     flex-direction: column;
 }
 
-.file-block {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 10px;
-    border-radius: 20px;
-    width: 300px;
-}
+
 
 #attachButton {
     height: 30px;
@@ -161,8 +153,6 @@ li {
 }
 
 .selectedFile {
-    /* position: fixed; */
-    /* background-color: rgb(255, 165, 165); */
     border: 1px solid white;
     border-radius: 5px;
     width: fit-content;
@@ -171,12 +161,35 @@ li {
     margin-top: 5px
 }
 
+.multiple-selected-files{
+    display: flex;
+    /* overflow-x: scroll;
+    width: 850px; */
+}
+
 .file-logos {
     width: 20px;
     height: 20px;
 }
 
-.title {
+.file-block {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 10px;
+    border-radius: 20px;
+    /* width: 300px; */
+}
+
+
+.multiple-files-container{
+    margin: 5px 0px;
+}
+.multiple-files {
+    display: flex;
+    gap: 10px;
+}
+.multiple-file-title {
     display: flex;
     gap: 10px;
     border: 1px solid black;
@@ -184,9 +197,45 @@ li {
     padding: 5px 10px;
 }
 
-.file {
+.multiple-file-name{
+  width: 200px; 
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+    
+}
+
+.single-file{
     display: flex;
     gap: 10px;
+}
+.single-file-title{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding: 5px 10px;
+}
+.single-file-name{
+    width: 150px; 
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+.image-files{
+    height:  150px;
+    width: 150px;
+    /* object-fit: cover; */
+}
+
+.video-files{
+    height:  200px;
+    width: 300px;
 }
 
 .fa-regular {
@@ -198,7 +247,7 @@ li {
     padding-top: 5px;
 }
 
-.fileName {
+.selected-files-names {
     color: white;
     text-align: right;
     font-size: 15px;
@@ -208,16 +257,3 @@ li {
     align-items: center;
 }
 
-.multiple-files{
-    display: flex;
-    flex-direction: column;
-    margin: 5px 0px;
-}
-
-.file-name{
-  width: 200px; /* Adjust the maximum width as needed */
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-    
-}
