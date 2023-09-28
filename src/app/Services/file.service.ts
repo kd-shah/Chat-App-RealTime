@@ -26,4 +26,10 @@ export class FileService {
       responseType: 'blob' as 'json' 
     });
   }
+
+  textFilePreview(uniqueFileName? : string){
+    const requestBody = { uniqueFileName: uniqueFileName };
+
+    return this.http.get<any>(`${this.baseUrl}file/textFilePreview?uniqueFileName=${uniqueFileName}`);
+  }
 }

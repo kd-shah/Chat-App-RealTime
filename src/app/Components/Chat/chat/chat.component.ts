@@ -46,6 +46,9 @@ export class ChatComponent implements OnInit {
   fileInput: HTMLElement | null = document.getElementById('fileInput');
   selectedFiles: File[] = [];
 
+  isFilePreview: boolean = true
+  filePreviewResult: string | null = null;
+
   constructor(private route: ActivatedRoute,
     private message: MessageService,
     private auth: AuthService,
@@ -376,6 +379,34 @@ export class ChatComponent implements OnInit {
 
     });
   }
+
+
+  getVideoSource(uniqueFileName: string | undefined): string {
+    // Construct the correct video source URL within your Angular application
+    return `assets/SharedFiles/${uniqueFileName}`;
+  }
+
+  playVideo(uniqueFileName: string | undefined) {
+    console.log("Playing video")
+    const videoElement = document.getElementById('videoPlayer') as HTMLVideoElement;
+    if (videoElement) {
+        // Set the video source dynamically
+        videoElement.src = this.getVideoSource(uniqueFileName);
+        videoElement.load(); // Load the new video source
+        videoElement.play(); // Start playing the video
+    }
+}
+
+
+  filePreview(uniqueFileName: string | undefined) {
+    console.log("preview called");
+    this.file.textFilePreview(uniqueFileName).subscribe((response: any) => {
+        console.log(response);
+        this.isFilePreview = false;
+        this.filePreviewResult = response.fileContent;
+        return response.fileContent
+    });
+}
 
   
 }

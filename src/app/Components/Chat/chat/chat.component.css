@@ -220,7 +220,7 @@ li {
     padding: 5px 10px;
 }
 .single-file-name{
-    width: 150px; 
+    width: fit-; 
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;

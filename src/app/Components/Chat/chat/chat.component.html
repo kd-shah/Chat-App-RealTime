@@ -58,22 +58,28 @@
                                         src="../../../../assets/SharedFiles/{{eachMessage.attachedFiles[0].uniqueFileName}}"
                                         class="image-files">
 
-                                    <!-- <img *ngSwitchCase="'video/mp4'"
-                                    src="{{ generateThumbnailUrl(eachMessage.attachedFiles[0].uniqueFileName) }}" class="video-thumbnail"> -->
-
-                                    <video *ngSwitchCase="'video/mp4'" class="video-files">
+                                    <video *ngSwitchCase="'video/mp4'" class="video-files" id="videoPlayer">
                                         <source
-                                            src="../../../../assets/SharedFiles/{{eachMessage.attachedFiles[0].uniqueFileName}}#t=9"
+                                            src="../../../../assets/SharedFiles/{{eachMessage.attachedFiles[0].uniqueFileName}}"
+                                            (click)="playVideo(eachMessage.attachedFiles[0].uniqueFileName)"
                                             type="video/mp4">
                                         Your browser does not support the video tag.
                                     </video>
-                                    <div *ngSwitchCase="'text/plain'" #singleTextFile
-                                        id="text-files"></div>
-                                    <div class="single-file-name">{{eachMessage.attachedFiles[0].fileName}}</div>
+                                    <div *ngSwitchCase="'text/plain'" #singleTextFile id="text-files">
+                                        <div class="single-file-name">{{eachMessage.attachedFiles[0].fileName}}</div>
+                                        <!-- <div *ngIf="filePreview">{{filePreview(eachMessage.attachedFiles[0].uniqueFileName)}}</div> -->
+                                        <!-- <div *ngIf="filePreview(eachMessage.attachedFiles[0].uniqueFileName) != null">
+                                            {{ filePreview(eachMessage.attachedFiles[0].uniqueFileName) }}
+                                          </div> -->
+
+
+                                    </div>
+
                                 </div>
                                 <i class="fa-regular fa-circle-down"
                                     (click)="onDownload(eachMessage.attachedFiles[0].fileId, eachMessage.attachedFiles[0].fileName)"></i>
                             </div>
+
                         </div>
 
                     </div>
